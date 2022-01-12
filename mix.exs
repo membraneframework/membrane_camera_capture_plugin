@@ -1,24 +1,25 @@
-defmodule Membrane.Template.Mixfile do
+defmodule Membrane.MediaCapture.Mixfile do
   use Mix.Project
 
   @version "0.1.0"
-  @github_url "https://github.com/membraneframework/membrane_template_plugin"
+  @github_url "https://github.com/membraneframework/membrane_media_capture_plugin"
 
   def project do
     [
-      app: :membrane_template_plugin,
+      app: :membrane_mnedia_capture_plugin,
       version: @version,
       elixir: "~> 1.13",
+      compilers: [:unifex, :bundlex] ++ Mix.compilers(),
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
 
       # hex
-      description: "Template Plugin for Membrane Multimedia Framework",
+      description: "Plugin for capturing local's device media such as camera video or microphone audio",
       package: package(),
 
       # docs
-      name: "Membrane Template plugin",
+      name: "Membrane Media Capture Plugin",
       source_url: @github_url,
       homepage_url: "https://membraneframework.org",
       docs: docs()
@@ -37,6 +38,7 @@ defmodule Membrane.Template.Mixfile do
   defp deps do
     [
       {:membrane_core, "~> 0.8.1"},
+      {:unifex, "0.7.2"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}
@@ -50,7 +52,8 @@ defmodule Membrane.Template.Mixfile do
       links: %{
         "GitHub" => @github_url,
         "Membrane Framework Homepage" => "https://membraneframework.org"
-      }
+      },
+      files: ["lib", "mix.exs", "README*", "LICENSE*", ".formatter.exs", "bundlex.exs", "c_src"]
     ]
   end
 
@@ -59,7 +62,7 @@ defmodule Membrane.Template.Mixfile do
       main: "readme",
       extras: ["README.md", "LICENSE"],
       source_ref: "v#{@version}",
-      nest_modules_by_prefix: [Membrane.Template]
+      nest_modules_by_prefix: [Membrane.MediaCapture]
     ]
   end
 end
