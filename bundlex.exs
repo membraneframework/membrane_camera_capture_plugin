@@ -12,7 +12,7 @@ defmodule Membrane.MediaCapture.BundlexProject do
       media_capture: [
         interface: :nif,
         sources: ["media_capture.c"],
-        pkg_configs: ["libavutil", "libavcodec"],
+        pkg_configs: ["libavformat", "libavutil", "libavdevice"],
         preprocessor: Unifex
       ]
     ]

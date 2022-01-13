@@ -1,0 +1,1 @@
+Membrane.MediaCapture.Native.test()

@@ -6,7 +6,7 @@ defmodule Membrane.MediaCapture.Mixfile do
 
   def project do
     [
-      app: :membrane_mnedia_capture_plugin,
+      app: :membrane_media_capture_plugin,
       version: @version,
       elixir: "~> 1.13",
       compilers: [:unifex, :bundlex] ++ Mix.compilers(),
