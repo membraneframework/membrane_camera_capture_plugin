@@ -10,4 +10,7 @@ typedef struct State {
 
 } State;
 
+extern const char* driver;
+
+
 #include "_generated/media_capture.h"
