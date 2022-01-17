@@ -26,6 +26,7 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
   AVDictionary *options = NULL;
 
   av_dict_set(&options, "framerate", framerate, 0);
+  av_dict_set(&options, "pixel_format", "nv12", 0);
   if (avformat_open_input(&state->input_ctx, url, input_format, &options) < 0) {
     ret = do_open_result_error(env, "Could not open supplied url");
     goto end;

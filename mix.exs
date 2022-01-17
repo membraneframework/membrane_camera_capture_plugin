@@ -42,7 +42,9 @@ defmodule Membrane.MediaCapture.Mixfile do
       {:unifex, "0.7.2"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
-      {:credo, ">= 0.0.0", only: :dev, runtime: false}
+      {:credo, ">= 0.0.0", only: :dev, runtime: false},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.16.0"},
+      {:membrane_file_plugin, "~> 0.7"}
     ]
   end
 

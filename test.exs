@@ -1,31 +1,28 @@
 defmodule Example do
-  def get_frames(_state, 0) do
-    :ok
-  end
+  use Membrane.Pipeline
 
-  def get_frames(state, counter) do
-    with {:ok, frame} <- Membrane.MediaCapture.Native.read_packet(state) do
-      File.write!("output/frame_#{counter}.raw", frame, [:binary])
-      get_frames(state, counter - 1)
-    else
-      {:error, _reason} = error ->
-        IO.puts("#{counter} frames left to go, but failed to get them")
-        error
-    end
+  @impl true
+  def handle_init(_opts) do
+    spec = %ParentSpec{
+      children: %{
+        source: Membrane.MediaCapture,
+        encoder: Membrane.H264.FFmpeg.Encoder,
+        sink: %Membrane.File.Sink{location: "output.h264"}
+      },
+      links: [
+        link(:source) |> to(:encoder) |> to(:sink)
+      ]
+    }
+
+    {{:ok, spec: spec}, %{}}
   end
 end
 
-File.rm_rf("output")
-File.mkdir!("output")
-{:ok, ref} = Membrane.MediaCapture.Native.test()
-{time, :ok} = :timer.tc(fn -> Example.get_frames(ref, 60) end)
+{:ok, pid} = Example.start_link()
+:ok = Example.play(pid)
 
-time =
-  Membrane.Time.microseconds(time)
-  |> Membrane.Time.to_seconds()
-  |> then(fn
-    %Ratio{} = input -> Ratio.to_string(input)
-    id -> id
-  end)
+monitor_ref = Process.monitor(pid)
 
-IO.puts("Took #{time} seconds to get 60 frames")
+receive do
+  {:DOWN, ^monitor_ref, :process, _object, _reason} -> :ok
+end
