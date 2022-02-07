@@ -33,7 +33,7 @@ defmodule Membrane.MediaCapture do
     caps = %Membrane.Caps.Video.Raw{
       width: 1280,
       height: 720,
-      format: :nv12,
+      format: :NV12,
       aligned: true,
       framerate: {30, 1}
     }
