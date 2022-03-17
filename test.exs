@@ -5,12 +5,13 @@ defmodule Example do
   def handle_init(_opts) do
     spec = %ParentSpec{
       children: %{
-        source: Membrane.MediaCapture,
+        source: %Membrane.MediaCapture{},
+        converter: %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420},
         encoder: Membrane.H264.FFmpeg.Encoder,
         sink: %Membrane.File.Sink{location: "output.h264"}
       },
       links: [
-        link(:source) |> to(:encoder) |> to(:sink)
+        link(:source) |> to(:converter) |> to(:encoder) |> to(:sink)
       ]
     }
 

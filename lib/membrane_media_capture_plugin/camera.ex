@@ -30,10 +30,10 @@ defmodule Membrane.MediaCapture do
 
   @impl true
   def handle_prepared_to_playing(_ctx, state) do
-    caps = %Membrane.Caps.Video.Raw{
+    caps = %Membrane.RawVideo{
       width: 1280,
       height: 720,
-      format: :NV12,
+      pixel_format: :NV12,
       aligned: true,
       framerate: {30, 1}
     }
