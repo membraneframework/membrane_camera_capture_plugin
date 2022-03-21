@@ -24,6 +24,10 @@ end
 
 monitor_ref = Process.monitor(pid)
 
+Process.sleep(5000)
+
+Process.exit(pid, :kill)
+
 receive do
   {:DOWN, ^monitor_ref, :process, _object, _reason} -> :ok
 end

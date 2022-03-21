@@ -14,20 +14,18 @@ defmodule Membrane.MediaCaptureTest do
         sink: %Membrane.File.Sink{location: "output.h264"}
       ],
       links: [
-        link(:source) |> to(:converter) |> to(:encoder) |> to(:sink)
+        link(:source) |>
+         |> to(:encoder) |> to(:sink)
       ]
     }
 
     {:ok, pid} = Testing.Pipeline.start_link(options)
     :ok = Testing.Pipeline.play(pid)
-    monitor_ref = Process.monitor(pid)
 
     Process.sleep(1000)
 
-    Testing.Pipeline.stop_and_terminate(pid, blocking?: true)
+    :ok = Membrane.Pipeline.stop_and_terminate(pid, blocking?: true)
 
     System.cmd("ffplay", ["output.h264"])
-
-    Process.exit(self(), :kill)
   end
 end
