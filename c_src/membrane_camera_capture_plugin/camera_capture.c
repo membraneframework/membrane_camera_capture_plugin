@@ -56,7 +56,7 @@ UNIFEX_TERM read_packet(UnifexEnv *env, State *state) {
   AVPacket packet;
   UNIFEX_TERM ret;
   int res;
-  while ((res = av_read_frame(state->input_ctx, &packet)) == -35)
+  while ((res = av_read_frame(state->input_ctx, &packet)) == AVERROR(EAGAIN))
     ;
 
   if (res < 0) {
