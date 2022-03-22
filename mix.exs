@@ -15,8 +15,7 @@ defmodule Membrane.CameraCapture.Mixfile do
       deps: deps(),
 
       # hex
-      description:
-        "Plugin for capturing local's device camera video",
+      description: "Plugin for capturing local's device camera video",
       package: package(),
 
       # docs
