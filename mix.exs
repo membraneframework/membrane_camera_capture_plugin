@@ -1,12 +1,12 @@
-defmodule Membrane.MediaCapture.Mixfile do
+defmodule Membrane.CameraCapture.Mixfile do
   use Mix.Project
 
-  @version "0.1.0"
-  @github_url "https://github.com/membraneframework/membrane_media_capture_plugin"
+  @version "0.2.0"
+  @github_url "https://github.com/membraneframework/membrane_camera_capture_plugin"
 
   def project do
     [
-      app: :membrane_media_capture_plugin,
+      app: :membrane_camera_capture_plugin,
       version: @version,
       elixir: "~> 1.13",
       compilers: [:unifex, :bundlex] ++ Mix.compilers(),
@@ -16,11 +16,11 @@ defmodule Membrane.MediaCapture.Mixfile do
 
       # hex
       description:
-        "Plugin for capturing local's device media such as camera video or microphone audio",
+        "Plugin for capturing local's device camera video",
       package: package(),
 
       # docs
-      name: "Membrane Media Capture Plugin",
+      name: "Membrane Camera Capture Plugin",
       source_url: @github_url,
       homepage_url: "https://membraneframework.org",
       docs: docs()
@@ -67,7 +67,7 @@ defmodule Membrane.MediaCapture.Mixfile do
       main: "readme",
       extras: ["README.md", "LICENSE"],
       source_ref: "v#{@version}",
-      nest_modules_by_prefix: [Membrane.MediaCapture]
+      nest_modules_by_prefix: [Membrane.CameraCapture]
     ]
   end
 end

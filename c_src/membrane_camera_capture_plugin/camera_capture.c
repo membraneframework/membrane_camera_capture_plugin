@@ -1,4 +1,4 @@
-#include "./media_capture.h"
+#include "./camera_capture.h"
 
 #include <libavdevice/avdevice.h>
 #include <string.h>
@@ -16,7 +16,7 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
   State *state = unifex_alloc_state(env);
   UNIFEX_TERM ret;
 
-  AVInputFormat *input_format = av_find_input_format(driver);
+  const AVInputFormat *input_format = av_find_input_format(driver);
   if (input_format == NULL) {
     ret = do_open_result_error(env, "Could open supplied format");
     goto end;
@@ -76,6 +76,7 @@ end:
 }
 
 void handle_destroy_state(UnifexEnv *_env, State *state) {
+  UNIFEX_UNUSED(_env);
   avformat_close_input(&state->input_ctx);
   avformat_free_context(state->input_ctx);
 }

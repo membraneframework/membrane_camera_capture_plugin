@@ -1,4 +1,4 @@
-defmodule Membrane.MediaCapture do
+defmodule Membrane.CameraCapture do
   @moduledoc """
   Membrane Source Element for capturing image from a camera through FFmpeg
   """

@@ -1,4 +1,4 @@
-defmodule Membrane.MediaCaptureTest do
+defmodule Membrane.CameraCaptureTest do
   use ExUnit.Case
 
   import Membrane.ParentSpec
@@ -8,7 +8,7 @@ defmodule Membrane.MediaCaptureTest do
   test "integration test" do
     options = %Testing.Pipeline.Options{
       elements: [
-        source: Membrane.MediaCapture,
+        source: Membrane.CameraCapture,
         converter: %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420},
         encoder: Membrane.H264.FFmpeg.Encoder,
         sink: %Membrane.File.Sink{location: "output.h264"}

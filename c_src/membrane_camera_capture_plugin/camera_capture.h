@@ -13,4 +13,4 @@ typedef struct State {
 extern const char* driver;
 
 
-#include "_generated/media_capture.h"
+#include "_generated/camera_capture.h"

@@ -1,4 +1,4 @@
-defmodule Membrane.MediaCapture.BundlexProject do
+defmodule Membrane.CameraCapture.BundlexProject do
   use Bundlex.Project
 
   def project do
@@ -9,9 +9,9 @@ defmodule Membrane.MediaCapture.BundlexProject do
 
   defp natives() do
     [
-      media_capture: [
+      camera_capture: [
         interface: :nif,
-        sources: ["media_capture.c"],
+        sources: ["camera_capture.c"],
         pkg_configs: ["libavformat", "libavutil", "libavdevice"],
         preprocessor: Unifex
       ]

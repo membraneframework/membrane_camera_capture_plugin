@@ -1,12 +1,11 @@
-# Membrane Template Plugin
+# Membrane Camera Capture Plugin
 
 [![Hex.pm](https://img.shields.io/hexpm/v/membrane_template_plugin.svg)](https://hex.pm/packages/membrane_template_plugin)
 [![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](https://hexdocs.pm/membrane_template_plugin)
 [![CircleCI](https://circleci.com/gh/membraneframework/membrane_template_plugin.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane_template_plugin)
 
-This repository contains a template for new elements.
+This Plugin can be used to capture Camera video from a device.
 
-Check out different branches for other flavours of template.
 
 It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 
@@ -17,7 +16,7 @@ The package can be installed by adding `membrane_template_plugin` to your list o
 ```elixir
 def deps do
   [
-    {:membrane_template_plugin, "~> 0.1.0"}
+    {:membrane_template_plugin, "~> 0.2.0"}
   ]
 end
 ```
@@ -32,7 +31,7 @@ defmodule Example do
   def handle_init(_opts) do
     spec = %ParentSpec{
       children: %{
-        source: %Membrane.MediaCapture{},
+        source: %Membrane.CameraCapture{},
         converter: %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420},
         encoder: Membrane.H264.FFmpeg.Encoder,
         sink: %Membrane.File.Sink{location: "output.h264"}
@@ -53,7 +52,7 @@ monitor_ref = Process.monitor(pid)
 
 Process.sleep(5000)
 
-Process.exit(pid, :kill)
+:ok = Membrane.Pipeline.stop_and_terminate(pid, blocking?: true)
 
 receive do
   {:DOWN, ^monitor_ref, :process, _object, _reason} -> :ok
@@ -69,7 +68,11 @@ ffplay output.h264
 
 ## Testing
 
-To run manual tests, type `mix test --include manual`
+To run manual tests, type
+
+```shell
+mix test --include manual
+```
 
 ## Copyright and License
 

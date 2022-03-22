@@ -1,4 +1,4 @@
-module Membrane.MediaCapture.Native
+module Membrane.CameraCapture.Native
 
 state_type "State"
 
