@@ -1,8 +1,8 @@
 defmodule Membrane.MediaCaptureTest do
   use ExUnit.Case
 
-  alias Membrane.Testing
   import Membrane.ParentSpec
+  alias Membrane.Testing
 
   @tag :manual
   test "integration test" do
@@ -14,15 +14,14 @@ defmodule Membrane.MediaCaptureTest do
         sink: %Membrane.File.Sink{location: "output.h264"}
       ],
       links: [
-        link(:source) |>
-         |> to(:encoder) |> to(:sink)
+        link(:source) |> to(:converter) |> to(:encoder) |> to(:sink)
       ]
     }
 
     {:ok, pid} = Testing.Pipeline.start_link(options)
     :ok = Testing.Pipeline.play(pid)
 
-    Process.sleep(1000)
+    Process.sleep(5000)
 
     :ok = Membrane.Pipeline.stop_and_terminate(pid, blocking?: true)
 
