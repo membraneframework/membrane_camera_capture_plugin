@@ -45,14 +45,25 @@ defmodule Membrane.CameraCapture do
     {{:ok, caps: {:output, caps}}, %{state | provider: pid}}
   end
 
+  @impl true
+  def handle_prepared_to_stopped(_context, %{provider: pid} = state) do
+    send(pid, :stop)
+    {:ok, state}
+  end
+
   defp frame_provider(native, target) do
-    with {:ok, frame} <- Native.read_packet(native) do
-      buffer = %Buffer{payload: frame}
-      send(target, {:frame_provider, buffer})
-      frame_provider(native, target)
-    else
-      {:error, reason} ->
-        raise "Error when reading packet from camera: #{inspect(reason)}"
+    receive do
+      :stop -> :ok
+    after
+      0 ->
+        with {:ok, frame} <- Native.read_packet(native) do
+          buffer = %Buffer{payload: frame}
+          send(target, {:frame_provider, buffer})
+          frame_provider(native, target)
+        else
+          {:error, reason} ->
+            raise "Error when reading packet from camera: #{inspect(reason)}"
+        end
     end
   end
 
@@ -61,6 +72,9 @@ defmodule Membrane.CameraCapture do
     {{:ok, buffer: {:output, buffer}}, state}
   end
 
+  # This callback is called only when
+  # element is not in state playing and frame provider is not
+  # terminated yet (and sending a frame to us, so we ignore it)
   @impl true
   def handle_other({:frame_provider, _buffer}, _ctx, state) do
     {:ok, state}
