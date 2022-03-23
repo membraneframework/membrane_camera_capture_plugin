@@ -14,11 +14,13 @@ defmodule Membrane.CameraCapture do
 
   def_options device: [
                 spec: String.t(),
-                default: "default"
+                default: "default",
+                description: "Name of the device used to capture video"
               ],
               framerate: [
                 spec: non_neg_integer(),
-                default: 30
+                default: 30,
+                description: "Framerate of device's output video stream"
               ]
 
   @impl true

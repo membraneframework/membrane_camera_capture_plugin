@@ -5,13 +5,14 @@ defmodule Membrane.CameraCaptureTest do
   alias Membrane.Testing
 
   @tag :manual
-  test "integration test" do
+  @tag :tmp_dir
+  test "integration test", %{tmp_dir: tmp_dir} do
     options = %Testing.Pipeline.Options{
       elements: [
         source: Membrane.CameraCapture,
         converter: %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420},
         encoder: Membrane.H264.FFmpeg.Encoder,
-        sink: %Membrane.File.Sink{location: "output.h264"}
+        sink: %Membrane.File.Sink{location: Path.join(tmp_dir, "output.h264")}
       ],
       links: [
         link(:source) |> to(:converter) |> to(:encoder) |> to(:sink)
@@ -25,6 +26,6 @@ defmodule Membrane.CameraCaptureTest do
 
     :ok = Membrane.Pipeline.stop_and_terminate(pid, blocking?: true)
 
-    System.cmd("ffplay", ["output.h264"])
+    System.cmd("ffplay", [Path.join(tmp_dir, "output.h264")])
   end
 end
