@@ -20,11 +20,53 @@ def deps do
 end
 ```
 
-## Testing (and usage example)
+## Sample Usage
+
+Dependencies:
+
+```elixir
+def deps do
+  [
+    {:membrane_core, "~> 0.9.0"},
+    {:unifex, "~> 0.7.3"},
+    {:membrane_h264_ffmpeg_plugin, "~> 0.18.0"},
+    {:membrane_file_plugin, "~> 0.9.0"},
+    # TODO Replace that
+    {:membrane_ffmpeg_swscale_plugin,
+      github: "membraneframework/membrane_ffmpeg_swscale_plugin",
+      branch: "pix_fmt_converter"}
+  ]
+end
+```
+
+```elixir
+defmodule Example do
+  use Membrane.Pipeline
+
+  @impl true
+  def handle_init(_) do
+    children = [
+      source: Membrane.CameraCapture,
+      converter: %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420},
+      encoder: Membrane.H264.FFmpeg.Encoder,
+      sink: %Membrane.File.Sink{location: "output.h264"}
+    ]
+
+    links = [
+      link(:source)
+      |> to(:converter)
+      |> to(:encoder)
+      |> to(:sink)
+    ]
+
+    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+  end
+end
+```
+
+## Testing
 
 Running this manual test, you should be able to record a 5-sec long video stream from your webcam and then play it using ffplay (you need to have ffmpeg installed).
-
-Moreover, you can check how this plugin can be used [in this test](test/membrane_media_capture_plugin/camera_capture_plugin_test.exs).
 
 To run manual tests, you need to install dependencies:
 
@@ -38,7 +80,7 @@ And run manual (you observe the result and decide whether it works) tests:
 $ mix test --include manual
 ```
 
-If run successfully, you should be able to see yourself in the video.
+If run successfully, you should be able to see video recorded by your camera.
 
 ## Copyright and License
 

@@ -44,6 +44,7 @@ defmodule Membrane.CameraCapture.Mixfile do
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
       {:membrane_h264_ffmpeg_plugin, "~> 0.18.0", only: :test},
       {:membrane_file_plugin, "~> 0.9.0", only: :test},
+      # TODO Replace that
       {:membrane_ffmpeg_swscale_plugin,
        github: "membraneframework/membrane_ffmpeg_swscale_plugin",
        branch: "pix_fmt_converter",
