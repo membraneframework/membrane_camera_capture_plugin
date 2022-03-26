@@ -16,7 +16,7 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
   State *state = unifex_alloc_state(env);
   UNIFEX_TERM ret;
 
-  const AVInputFormat *input_format = av_find_input_format(driver);
+  AVInputFormat *input_format = av_find_input_format(driver);
   if (input_format == NULL) {
     ret = do_open_result_error(env, "Could not open input");
     goto end;
