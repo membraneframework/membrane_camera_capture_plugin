@@ -7,7 +7,6 @@ defmodule Membrane.CameraCaptureTest do
   @tag :tmp_dir
   test "integration test", %{tmp_dir: tmp_dir} do
     output_path = Path.join(tmp_dir, "output.h264")
-    on_exit(fn -> File.rm(output_path) end)
 
     options = %Testing.Pipeline.Options{
       elements: [
