@@ -24,7 +24,7 @@ defmodule Membrane.CameraCaptureTest do
     Process.sleep(5000)
 
     # Check if pipeline is alive
-    assert Process.alive?(pid) == true
+    assert Process.alive?(pid)
 
     :ok = Membrane.Pipeline.stop_and_terminate(pid, blocking?: true)
 
