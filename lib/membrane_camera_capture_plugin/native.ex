@@ -1,4 +1,4 @@
-defmodule Membrane.MediaCapture.Native do
+defmodule Membrane.CameraCapture.Native do
   @moduledoc false
   use Unifex.Loader
 
