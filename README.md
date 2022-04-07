@@ -31,10 +31,7 @@ def deps do
     {:membrane_camera_capture_plugin, "~> 0.1.0"},
     {:membrane_h264_ffmpeg_plugin, "~> 0.18.0"},
     {:membrane_file_plugin, "~> 0.9.0"},
-    # TODO Replace that
-    {:membrane_ffmpeg_swscale_plugin,
-      github: "membraneframework/membrane_ffmpeg_swscale_plugin",
-      branch: "pix_fmt_converter"}
+    {:membrane_ffmpeg_swscale_plugin, "~> 0.8.0"}
   ]
 end
 ```
