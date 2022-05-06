@@ -18,14 +18,13 @@ defmodule Membrane.CameraCaptureTest do
     }
 
     {:ok, pid} = Testing.Pipeline.start_link(options)
-    assert Testing.Pipeline.play(pid) == :ok
 
     Process.sleep(5000)
 
     # Check if pipeline is alive
     assert Process.alive?(pid)
 
-    :ok = Membrane.Pipeline.stop_and_terminate(pid, blocking?: true)
+    :ok = Membrane.Pipeline.terminate(pid, blocking?: true)
 
     System.cmd("ffplay", [output_path])
   end
