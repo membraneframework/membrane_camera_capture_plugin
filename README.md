@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_camera_capture_plugin` to your 
 ```elixir
 def deps do
   [
-    {:membrane_camera_capture_plugin, "~> 0.1.0"}
+	{:membrane_camera_capture_plugin, "~> 0.2.0"}
   ]
 end
 ```
@@ -28,7 +28,7 @@ Dependencies:
 def deps do
   [
     {:membrane_core, "~> 0.9.0"},
-    {:membrane_camera_capture_plugin, "~> 0.1.0"},
+	{:membrane_camera_capture_plugin, "~> 0.2.0"}
     {:membrane_h264_ffmpeg_plugin, "~> 0.18.0"},
     {:membrane_file_plugin, "~> 0.9.0"},
     {:membrane_ffmpeg_swscale_plugin, "~> 0.8.0"}
