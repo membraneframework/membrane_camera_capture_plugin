@@ -13,6 +13,7 @@ defmodule Membrane.CameraCapture.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      dialyzer: dialyzer(),
 
       # hex
       description: "Plugin for capturing local's device camera video stream",
@@ -47,6 +48,19 @@ defmodule Membrane.CameraCapture.Mixfile do
       {:membrane_file_plugin, "~> 0.12.0", only: :test},
       {:membrane_ffmpeg_swscale_plugin, "~> 0.9.0", only: :test}
     ]
+  end
+
+  defp dialyzer() do
+    opts = [
+      flags: [:error_handling]
+    ]
+
+    if System.get_env("CI") == "true" do
+      # Store PLTs in cacheable directory for CI
+      [plt_local_path: "priv/plts", plt_core_path: "priv/plts"] ++ opts
+    else
+      opts
+    end
   end
 
   defp package do
