@@ -27,7 +27,6 @@ Dependencies:
 ```elixir
 def deps do
   [
-    {:membrane_core, "~> 0.9.0"},
     {:membrane_camera_capture_plugin, "~> 0.3.0"},
     {:membrane_h264_ffmpeg_plugin, "~> 0.18.0"},
     {:membrane_file_plugin, "~> 0.9.0"},
