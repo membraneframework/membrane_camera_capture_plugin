@@ -28,9 +28,9 @@ Dependencies:
 def deps do
   [
     {:membrane_camera_capture_plugin, "~> 0.3.0"},
-    {:membrane_h264_ffmpeg_plugin, "~> 0.18.0"},
-    {:membrane_file_plugin, "~> 0.9.0"},
-    {:membrane_ffmpeg_swscale_plugin, "~> 0.8.0"}
+    {:membrane_h264_ffmpeg_plugin, "~> 0.21"},
+    {:membrane_file_plugin, "~> 0.10"},
+    {:membrane_ffmpeg_swscale_plugin, "~> 0.10"}
   ]
 end
 ```
