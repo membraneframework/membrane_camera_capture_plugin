@@ -4,16 +4,17 @@
 #include <string.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-const char *driver = "v4l2";
+const char *driver = "dshow";
 #elif __APPLE__
 const char *driver = "avfoundation";
 #elif __linux__
-const char *driver = "dshow";
+const char *driver = "v4l2";
 #endif
 
 UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
   avdevice_register_all();
   State *state = unifex_alloc_state(env);
+  state->input_ctx = NULL;
   UNIFEX_TERM ret;
 
   AVInputFormat *input_format = av_find_input_format(driver);
@@ -22,7 +23,6 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
     goto end;
   }
 
-  state->input_ctx = avformat_alloc_context();
   AVDictionary *options = NULL;
 
   av_dict_set(&options, "framerate", framerate, 0);
@@ -78,5 +78,4 @@ end:
 void handle_destroy_state(UnifexEnv *_env, State *state) {
   UNIFEX_UNUSED(_env);
   avformat_close_input(&state->input_ctx);
-  avformat_free_context(state->input_ctx);
 }

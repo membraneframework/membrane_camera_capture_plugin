@@ -6,11 +6,9 @@
 #include <unifex/unifex.h>
 
 typedef struct State {
-    AVFormatContext *input_ctx;
-
+  AVFormatContext *input_ctx;
 } State;
 
-extern const char* driver;
-
+extern const char *driver;
 
 #include "_generated/camera_capture.h"
