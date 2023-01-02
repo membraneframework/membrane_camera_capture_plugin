@@ -23,6 +23,8 @@ defmodule Membrane.CameraCaptureTest do
     # Check if pipeline is alive
     assert Process.alive?(pipeline)
 
+    Membrane.Pipeline.terminate(pipeline)
+
     System.cmd("ffplay", [output_path])
   end
 end

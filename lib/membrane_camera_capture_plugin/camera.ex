@@ -71,7 +71,7 @@ defmodule Membrane.CameraCapture do
   end
 
   @impl true
-  def handle_info({:frame_provider, buffer}, %{playback_state: :playing} = _ctx, state) do
+  def handle_info({:frame_provider, buffer}, %{playback: :playing} = _ctx, state) do
     {[buffer: {:output, buffer}], state}
   end
 
