@@ -1,6 +1,8 @@
 defmodule Membrane.CameraCaptureTest do
   use ExUnit.Case
 
+  import Membrane.ChildrenSpec
+
   alias Membrane.Testing
 
   @tag :manual
@@ -8,23 +10,18 @@ defmodule Membrane.CameraCaptureTest do
   test "integration test", %{tmp_dir: tmp_dir} do
     output_path = Path.join(tmp_dir, "output.h264")
 
-    options = %Testing.Pipeline.Options{
-      elements: [
-        source: Membrane.CameraCapture,
-        converter: %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420},
-        encoder: Membrane.H264.FFmpeg.Encoder,
-        sink: %Membrane.File.Sink{location: output_path}
-      ]
-    }
+    structure =
+      child(:source, Membrane.CameraCapture)
+      |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420})
+      |> child(:encoder, Membrane.H264.FFmpeg.Encoder)
+      |> child(:sink, %Membrane.File.Sink{location: output_path})
 
-    {:ok, pid} = Testing.Pipeline.start_link(options)
+    pipeline = Testing.Pipeline.start_link_supervised!(structure: structure)
 
     Process.sleep(5000)
 
     # Check if pipeline is alive
-    assert Process.alive?(pid)
-
-    :ok = Membrane.Pipeline.terminate(pid, blocking?: true)
+    assert Process.alive?(pipeline)
 
     System.cmd("ffplay", [output_path])
   end
