@@ -8,7 +8,7 @@ defmodule Membrane.CameraCapture do
   alias Membrane.Buffer
 
   def_output_pad :output,
-    caps: :any,
+    accepted_format: _any,
     availability: :always,
     mode: :push
 
@@ -24,15 +24,16 @@ defmodule Membrane.CameraCapture do
               ]
 
   @impl true
-  def handle_init(%__MODULE__{} = options) do
+  def handle_init(_ctx, %__MODULE__{} = options) do
     with {:ok, native} <- Native.open(options.device, options.framerate) do
-      {:ok, %{native: native, provider: nil}}
+      state = %{native: native, provider: nil}
+      {[], state}
     end
   end
 
   @impl true
-  def handle_prepared_to_playing(_ctx, state) do
-    caps = %Membrane.RawVideo{
+  def handle_playing(ctx, state) do
+    stream_format = %Membrane.RawVideo{
       width: 1280,
       height: 720,
       pixel_format: :NV12,
@@ -42,13 +43,15 @@ defmodule Membrane.CameraCapture do
 
     my_pid = self()
     pid = spawn_link(fn -> frame_provider(state.native, my_pid) end)
-    {{:ok, caps: {:output, caps}}, %{state | provider: pid}}
-  end
 
-  @impl true
-  def handle_prepared_to_stopped(_context, %{provider: pid} = state) do
-    send(pid, :stop)
-    {:ok, state}
+    Membrane.ResourceGuard.register(
+      ctx.resource_guard,
+      fn -> send(pid, :stop) end
+    )
+
+    state = %{state | provider: pid}
+    actions = [stream_format: {:output, stream_format}]
+    {actions, state}
   end
 
   defp frame_provider(native, target) do
@@ -68,15 +71,15 @@ defmodule Membrane.CameraCapture do
   end
 
   @impl true
-  def handle_other({:frame_provider, buffer}, %{playback_state: :playing} = _ctx, state) do
-    {{:ok, buffer: {:output, buffer}}, state}
+  def handle_info({:frame_provider, buffer}, %{playback_state: :playing} = _ctx, state) do
+    {[buffer: {:output, buffer}], state}
   end
 
   # This callback is called only when
   # element is not in state playing and frame provider is not
   # terminated yet (and sending a frame to us, so we ignore it)
   @impl true
-  def handle_other({:frame_provider, _buffer}, _ctx, state) do
-    {:ok, state}
+  def handle_info({:frame_provider, _buffer}, _ctx, state) do
+    {[], state}
   end
 end
