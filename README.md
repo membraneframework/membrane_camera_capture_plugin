@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_camera_capture_plugin` to your 
 ```elixir
 def deps do
   [
-    {:membrane_camera_capture_plugin, "~> 0.3.0"}
+    {:membrane_camera_capture_plugin, "~> 0.4.0"}
   ]
 end
 ```
@@ -27,7 +27,7 @@ Dependencies:
 ```elixir
 def deps do
   [
-    {:membrane_camera_capture_plugin, "~> 0.3.0"},
+    {:membrane_camera_capture_plugin, "~> 0.4.0"},
     {:membrane_h264_ffmpeg_plugin, "~> 0.21"},
     {:membrane_file_plugin, "~> 0.10"},
     {:membrane_ffmpeg_swscale_plugin, "~> 0.10"}
@@ -40,22 +40,14 @@ defmodule Example do
   use Membrane.Pipeline
 
   @impl true
-  def handle_init(_) do
-    children = [
-      source: Membrane.CameraCapture,
-      converter: %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420},
-      encoder: Membrane.H264.FFmpeg.Encoder,
-      sink: %Membrane.File.Sink{location: "output.h264"}
-    ]
+  def handle_init(_ctx, _options) do
+    structure = 
+      child(:source, Membrane.CameraCapture) 
+      |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420}) 
+      |> child(:encoder, Membrane.H264.FFmpeg.Encoder) 
+      |> child(:sink, %Membrane.File.Sink{location: "output.h264"}) 
 
-    links = [
-      link(:source)
-      |> to(:converter)
-      |> to(:encoder)
-      |> to(:sink)
-    ]
-
-    {{:ok, spec: %ParentSpec{children: children, links: links}}, %{}}
+    {[spec: structure], %{}}
   end
 end
 ```
