@@ -85,12 +85,12 @@ defmodule Membrane.CameraCapture do
     {[], state}
   end
 
-  defp pixel_format_to_atom("yuv420"), do: :I420
+  defp pixel_format_to_atom("yuv420p"), do: :I420
   defp pixel_format_to_atom("yuv422p"), do: :I422
   defp pixel_format_to_atom("yuv444p"), do: :I444
   defp pixel_format_to_atom("rgb24"), do: :RGB
   defp pixel_format_to_atom("rgba"), do: :RGBA
-  defp pixel_format_to_atom("yuyv422"), do: :YUYV
+  defp pixel_format_to_atom("yuyv422"), do: :YUY2
   defp pixel_format_to_atom("nv12"), do: :NV12
   defp pixel_format_to_atom("nv21"), do: :NV21
   defp pixel_format_to_atom(pixel_format), do: raise("unsupported pixel format #{pixel_format}")
