@@ -7,25 +7,54 @@ defmodule Membrane.CameraCapture do
   alias __MODULE__.Native
   alias Membrane.Buffer
 
+  @supported_pixel_formats [
+    :I420,
+    :I422,
+    :I444,
+    :RGB,
+    :RGBA,
+    :YUY2,
+    :NV12
+  ]
+
   def_output_pad :output,
-    accepted_format: _any,
+    accepted_format:
+      %Membrane.RawVideo{pixel_format: pixel_format} when pixel_format in @supported_pixel_formats,
     availability: :always,
     mode: :push
 
   def_options device: [
-                spec: String.t(),
-                default: "default",
+                spec: String.t() | nil,
+                default: nil,
                 description: "Name of the device used to capture video"
               ],
               framerate: [
                 spec: non_neg_integer(),
-                default: 30,
-                description: "Framerate of device's output video stream"
+                default: 15,
+                description: """
+                Framerate value passed to Ffmpeg's device initialization.
+
+                Value 0 indicates that not framerate should be set.
+                """
+              ],
+              width: [
+                spec: non_neg_integer(),
+                default: 640
+              ],
+              height: [
+                spec: non_neg_integer(),
+                default: 480
               ]
 
   @impl true
   def handle_init(_ctx, %__MODULE__{} = options) do
-    with {:ok, native} <- Native.open(options.device, options.framerate) do
+    with {:ok, native} <-
+           Native.open(
+             options.device || find_default_device(),
+             options.framerate,
+             options.width,
+             options.height
+           ) do
       state = %{native: native, provider: nil}
       {[], state}
     end
@@ -33,14 +62,15 @@ defmodule Membrane.CameraCapture do
 
   @impl true
   def handle_playing(ctx, state) do
-    {:ok, width, height, pixel_format} = Native.stream_props(state.native)
+    {:ok, width, height, pixel_format, framerate_nom, framerate_den} =
+      Native.stream_props(state.native)
 
     stream_format = %Membrane.RawVideo{
       width: width,
       height: height,
       pixel_format: pixel_format_to_atom(pixel_format),
       aligned: true,
-      framerate: {30, 1}
+      framerate: {framerate_nom, framerate_den}
     }
 
     my_pid = self()
@@ -94,4 +124,19 @@ defmodule Membrane.CameraCapture do
   defp pixel_format_to_atom("nv12"), do: :NV12
   defp pixel_format_to_atom("nv21"), do: :NV21
   defp pixel_format_to_atom(pixel_format), do: raise("unsupported pixel format #{pixel_format}")
+
+  defp find_default_device() do
+    case :os.type() do
+      {:unix, :darwin} ->
+        # macos
+        "default"
+
+      {:unix, _subtype} ->
+        # some sort of linux
+        "/dev/video0"
+
+      {:win32, _subtype} ->
+        raise "Default device discovery is not available on Windows. Please provide the URL"
+    end
+  end
 end

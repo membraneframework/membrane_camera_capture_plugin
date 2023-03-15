@@ -12,7 +12,7 @@ const char *driver = "avfoundation";
 const char *driver = "v4l2";
 #endif
 
-UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
+UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate, char *resolution) {
   avdevice_register_all();
   State *state = unifex_alloc_state(env);
   state->input_ctx = NULL;
@@ -26,8 +26,12 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
 
   AVDictionary *options = NULL;
 
-  av_dict_set(&options, "framerate", framerate, 0);
+  if(strcmp(framerate, "0") != 0) {
+    av_dict_set(&options, "framerate", framerate, 0);
+  }
+
   av_dict_set(&options, "pixel_format", "nv12", 0);
+  av_dict_set(&options, "video_size", resolution, 0);
   if (avformat_open_input(&state->input_ctx, url, input_format, &options) < 0) {
     ret = do_open_result_error(env, "Could not open supplied url");
     goto end;
@@ -39,10 +43,11 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
   }
 
   if (state->input_ctx->nb_streams == 0) {
-    ret = do_open_result_error(env,
-                               "No streams found - at least one is required");
+    ret = do_open_result_error(env, "No streams found - at least one is required");
     goto cleanup;
   }
+
+  printf("Nb streams: %d\n", state->input_ctx->nb_streams);
 
   ret = do_open_result_ok(env, state);
   goto end;
@@ -57,8 +62,7 @@ UNIFEX_TERM read_packet(UnifexEnv *env, State *state) {
   AVPacket packet;
   UNIFEX_TERM ret;
   int res;
-  while ((res = av_read_frame(state->input_ctx, &packet)) == AVERROR(EAGAIN))
-    ;
+  while ((res = av_read_frame(state->input_ctx, &packet)) == AVERROR(EAGAIN));
 
   if (res < 0) {
     ret = read_packet_result_error(env, av_err2str(res));
@@ -77,8 +81,10 @@ end:
 }
 
 UNIFEX_TERM stream_props(UnifexEnv *env, State *state) {
-  AVCodecParameters *codec_params = state->input_ctx->streams[0]->codecpar;
-  return stream_props_result_ok(env, codec_params->width, codec_params->height, av_get_pix_fmt_name(codec_params->format));
+  AVStream *stream = state->input_ctx->streams[0];
+  AVCodecParameters *codec_params = stream->codecpar;
+  AVRational frame_rate = stream->avg_frame_rate;
+  return stream_props_result_ok(env, codec_params->width, codec_params->height, av_get_pix_fmt_name(codec_params->format), frame_rate.num, frame_rate.den);
 }
 
 void handle_destroy_state(UnifexEnv *_env, State *state) {
