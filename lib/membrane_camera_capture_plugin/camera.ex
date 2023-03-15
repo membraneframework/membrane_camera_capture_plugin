@@ -33,10 +33,12 @@ defmodule Membrane.CameraCapture do
 
   @impl true
   def handle_playing(ctx, state) do
+    {:ok, width, height, pixel_format} = Native.stream_props(state.native)
+
     stream_format = %Membrane.RawVideo{
-      width: 1280,
-      height: 720,
-      pixel_format: :NV12,
+      width: width,
+      height: height,
+      pixel_format: pixel_format_to_atom(pixel_format),
       aligned: true,
       framerate: {30, 1}
     }
@@ -82,4 +84,14 @@ defmodule Membrane.CameraCapture do
   def handle_info({:frame_provider, _buffer}, _ctx, state) do
     {[], state}
   end
+
+  defp pixel_format_to_atom("yuv420p"), do: :I420
+  defp pixel_format_to_atom("yuv422p"), do: :I422
+  defp pixel_format_to_atom("yuv444p"), do: :I444
+  defp pixel_format_to_atom("rgb24"), do: :RGB
+  defp pixel_format_to_atom("rgba"), do: :RGBA
+  defp pixel_format_to_atom("yuyv422"), do: :YUY2
+  defp pixel_format_to_atom("nv12"), do: :NV12
+  defp pixel_format_to_atom("nv21"), do: :NV21
+  defp pixel_format_to_atom(pixel_format), do: raise("unsupported pixel format #{pixel_format}")
 end

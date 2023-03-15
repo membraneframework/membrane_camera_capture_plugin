@@ -1,6 +1,7 @@
 #include "./camera_capture.h"
 
 #include <libavdevice/avdevice.h>
+#include <libavutil/pixdesc.h>
 #include <string.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
@@ -73,6 +74,11 @@ UNIFEX_TERM read_packet(UnifexEnv *env, State *state) {
 end:
   av_packet_unref(&packet);
   return ret;
+}
+
+UNIFEX_TERM stream_props(UnifexEnv *env, State *state) {
+  AVCodecParameters *codec_params = state->input_ctx->streams[0]->codecpar;
+  return stream_props_result_ok(env, codec_params->width, codec_params->height, av_get_pix_fmt_name(codec_params->format));
 }
 
 void handle_destroy_state(UnifexEnv *_env, State *state) {
