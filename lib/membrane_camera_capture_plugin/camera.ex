@@ -28,22 +28,32 @@ defmodule Membrane.CameraCapture do
                 default: nil,
                 description: "Name of the device used to capture video"
               ],
-              framerate: [
+              preffered_framerate: [
                 spec: non_neg_integer(),
                 default: 15,
                 description: """
                 Framerate value passed to Ffmpeg's device initialization.
 
-                Value 0 indicates that not framerate should be set.
+                Final framerate depends on device's capabilities and may be override by the driver without warning.
                 """
               ],
-              width: [
+              preffered_width: [
                 spec: non_neg_integer(),
-                default: 640
+                default: 640,
+                description: """
+                Width passed to Ffmpeg's device initialization.
+
+                Final width depends on device's capabilities and may be override by the driver without warning.
+                """
               ],
-              height: [
+              preffered_height: [
                 spec: non_neg_integer(),
-                default: 480
+                default: 480,
+                description: """
+                Height passed to FFmpeg's decive initialization.
+
+                Final height depends on device's capabilities and may be override by the driver without warning.
+                """
               ]
 
   @impl true
@@ -51,9 +61,9 @@ defmodule Membrane.CameraCapture do
     with {:ok, native} <-
            Native.open(
              options.device || find_default_device(),
-             options.framerate,
-             options.width,
-             options.height
+             options.preffered_framerate,
+             options.preffered_width,
+             options.preffered_height
            ) do
       state = %{native: native, provider: nil}
       {[], state}
@@ -123,7 +133,7 @@ defmodule Membrane.CameraCapture do
   defp pixel_format_to_atom("yuyv422"), do: :YUY2
   defp pixel_format_to_atom("nv12"), do: :NV12
   defp pixel_format_to_atom("nv21"), do: :NV21
-  defp pixel_format_to_atom(pixel_format), do: raise("unsupported pixel format #{pixel_format}")
+  defp pixel_format_to_atom(pixel_format), do: raise("Unsupported pixel format #{pixel_format}")
 
   defp find_default_device() do
     case :os.type() do

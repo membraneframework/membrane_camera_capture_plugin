@@ -15,8 +15,8 @@ defmodule Example do
   def handle_init(_ctx, _options) do
     structure = 
       child(:source, %Membrane.CameraCapture{
-        width: 1280,
-        height: 720
+        preffered_width: 1280,
+        preffered_height: 720
       }) 
       |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420}) 
       |> child(:encoder, Membrane.H264.FFmpeg.Encoder) 
