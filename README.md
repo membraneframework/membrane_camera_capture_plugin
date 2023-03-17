@@ -20,37 +20,13 @@ def deps do
 end
 ```
 
-## Sample Usage
+## Examples
 
-Dependencies:
-
-```elixir
-def deps do
-  [
-    {:membrane_camera_capture_plugin, "~> 0.4.0"},
-    {:membrane_h264_ffmpeg_plugin, "~> 0.21"},
-    {:membrane_file_plugin, "~> 0.10"},
-    {:membrane_ffmpeg_swscale_plugin, "~> 0.10"}
-  ]
-end
+To run the example, execute the following in your terminal in the root folder of this repository
+```shell
+$ elixir exapmles/camera_example.exs
 ```
-
-```elixir
-defmodule Example do
-  use Membrane.Pipeline
-
-  @impl true
-  def handle_init(_ctx, _options) do
-    structure = 
-      child(:source, Membrane.CameraCapture) 
-      |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420}) 
-      |> child(:encoder, Membrane.H264.FFmpeg.Encoder) 
-      |> child(:sink, %Membrane.File.Sink{location: "output.h264"}) 
-
-    {[spec: structure], %{}}
-  end
-end
-```
+It is expected that the example will self terminate after 60 seconds, leaving an `output.h264` file containing the recording captured from your webcam.
 
 ## Testing
 

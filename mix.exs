@@ -44,13 +44,9 @@ defmodule Membrane.CameraCapture.Mixfile do
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
-      {:membrane_h264_ffmpeg_plugin,
-       github: "membraneframework/membrane_h264_ffmpeg_plugin", branch: "update_caps", only: :test},
+      {:membrane_h264_ffmpeg_plugin, "~> 0.26.0", only: :test},
       {:membrane_file_plugin, "~> 0.13.0", only: :test},
-      {:membrane_ffmpeg_swscale_plugin,
-       github: "membraneframework/membrane_ffmpeg_swscale_plugin",
-       branch: "support-yuy2",
-       only: :test}
+      {:membrane_ffmpeg_swscale_plugin, "~> 0.11.1", only: :test}
     ]
   end
 
