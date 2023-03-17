@@ -19,29 +19,28 @@ defmodule Example do
         preffered_height: 720
       }) 
       |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420}) 
-      |> child(:encoder, Membrane.H264.FFmpeg.Encoder) 
+      |> child(:encoder, %Membrane.H264.FFmpeg.Encoder{max_b_frames: 0}) 
       |> child(:sink, %Membrane.File.Sink{location: "output.h264"}) 
 
     Membrane.Logger.info("""
     Example is starting.
-    It will automatically terminate after 20 seconds
+    It will automatically terminate after 60 seconds
     """)
-    Process.send_after(self(), :stop, 20_000)
+    Process.send_after(self(), :stop, 60_000)
 
     {[spec: structure, playback: :playing], %{}}
   end
 
   @impl true
   def handle_info(:stop, _context, state) do
-    Membrane.Pipeline.terminate(self())
-    {[], state}
+    {[terminate: :normal], state}
   end
 end
 
-{:ok, _supervisor, pipeline} = Example.start_link(%{})
+{:ok, _supervisor, pipeline} = Example.start_link()
 monitor = Process.monitor(pipeline)
 
 receive do
-  {:DOWN, ^monitor, :pid, _process, _reason} -> :ok
+  {:DOWN, ^monitor, :process, _pid, _reason} -> :ok
 end
 
