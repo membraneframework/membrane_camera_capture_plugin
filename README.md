@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_camera_capture_plugin` to your 
 ```elixir
 def deps do
   [
-	{:membrane_camera_capture_plugin, "~> 0.5.0"}
+    {:membrane_camera_capture_plugin, "~> 0.5.0"}
   ]
 end
 ```
