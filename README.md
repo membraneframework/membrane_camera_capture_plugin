@@ -10,6 +10,20 @@ It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 
 ## Installation
 
+First, you need to install FFmpeg on your system:
+
+### macOS
+
+```shell
+brew install ffmpeg
+```
+
+### Ubuntu
+
+```shell
+sudo apt-get install ffmpeg
+```
+
 The package can be installed by adding `membrane_camera_capture_plugin` to your list of dependencies in `mix.exs`:
 
 ```elixir
@@ -41,11 +55,11 @@ defmodule Example do
 
   @impl true
   def handle_init(_ctx, _options) do
-    structure = 
-      child(:source, Membrane.CameraCapture) 
-      |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420}) 
-      |> child(:encoder, Membrane.H264.FFmpeg.Encoder) 
-      |> child(:sink, %Membrane.File.Sink{location: "output.h264"}) 
+    structure =
+      child(:source, Membrane.CameraCapture)
+      |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420})
+      |> child(:encoder, Membrane.H264.FFmpeg.Encoder)
+      |> child(:sink, %Membrane.File.Sink{location: "output.h264"})
 
     {[spec: structure], %{}}
   end
@@ -69,6 +83,10 @@ $ mix test --include manual
 ```
 
 If run successfully, you should be able to see video recorded by your camera.
+
+_You might be asked to grant access to your camera, as some operating systems require that_
+
+_In case of the absence of a physical camera, it is necessary to use a virtual camera (e.g. OBS, [see how to set up the virtual camera in OBS](https://obsproject.com/kb/virtual-camera-guide))_
 
 ## Copyright and License
 
