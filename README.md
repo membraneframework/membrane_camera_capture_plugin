@@ -10,28 +10,31 @@ It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 
 ## Installation
 
-First, you need to install FFmpeg on your system:
+Add the following line to your `deps` in `mix.exs`. Run `mix deps.get`.
 
-### macOS
-
-```shell
-brew install ffmpeg
+```elixir
+  {:membrane_camera_capture_plugin, "~> 0.6.0"}
 ```
 
-### Ubuntu
+This package depends on the [ffmpeg](https://www.ffmpeg.org) libraries. The precompiled builds will be pulled and linked automatically. However, should there be any problems, consider installing it manually.
 
-```shell
+### Manual instalation of dependencies
+#### Ubuntu
+
+```bash
 sudo apt-get install ffmpeg
 ```
 
-The package can be installed by adding `membrane_camera_capture_plugin` to your list of dependencies in `mix.exs`:
+#### Arch/Manjaro
 
-```elixir
-def deps do
-  [
-    {:membrane_camera_capture_plugin, "~> 0.5.0"}
-  ]
-end
+```bash
+pacman -S ffmpeg
+```
+
+#### MacOS
+
+```bash
+brew install ffmpeg
 ```
 
 ## Sample Usage
