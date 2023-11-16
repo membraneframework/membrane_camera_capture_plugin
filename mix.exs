@@ -45,9 +45,8 @@ defmodule Membrane.CameraCapture.Mixfile do
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
-      {:membrane_h264_ffmpeg_plugin, "~> 0.31.0", only: :test},
-      {:membrane_file_plugin, "~> 0.14.0", only: :test},
-      {:membrane_ffmpeg_swscale_plugin, "~> 0.15.0", only: :test}
+      {:membrane_ffmpeg_swscale_plugin, "~> 0.15.0", only: :test},
+      {:membrane_sdl_plugin, ">= 0.0.0", only: :test}
     ]
   end
 

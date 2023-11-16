@@ -7,24 +7,19 @@ defmodule Membrane.CameraCaptureTest do
 
   @tag :manual
   @tag :tmp_dir
-  test "integration test", %{tmp_dir: tmp_dir} do
-    output_path = Path.join(tmp_dir, "output.h264")
+  test "integration test" do
+    spec =
+      child(Membrane.CameraCapture)
+      |> child(%Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420})
+      |> child(Membrane.SDL.Player)
 
-    structure =
-      child(:source, Membrane.CameraCapture)
-      |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420})
-      |> child(:encoder, Membrane.H264.FFmpeg.Encoder)
-      |> child(:sink, %Membrane.File.Sink{location: output_path})
+    pipeline = Testing.Pipeline.start_link_supervised!(spec: spec)
 
-    pipeline = Testing.Pipeline.start_link_supervised!(structure: structure)
-
-    Process.sleep(5000)
+    Process.sleep(10_000)
 
     # Check if pipeline is alive
     assert Process.alive?(pipeline)
 
     Membrane.Pipeline.terminate(pipeline)
-
-    System.cmd("ffplay", [output_path])
   end
 end

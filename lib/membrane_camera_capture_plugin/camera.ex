@@ -7,10 +7,7 @@ defmodule Membrane.CameraCapture do
   alias __MODULE__.Native
   alias Membrane.Buffer
 
-  def_output_pad :output,
-    accepted_format: _any,
-    availability: :always,
-    mode: :push
+  def_output_pad :output, accepted_format: _any, flow_control: :push
 
   def_options device: [
                 spec: String.t(),
@@ -26,7 +23,7 @@ defmodule Membrane.CameraCapture do
   @impl true
   def handle_init(_ctx, %__MODULE__{} = options) do
     with {:ok, native} <- Native.open(options.device, options.framerate) do
-      state = %{native: native, provider: nil}
+      state = %{native: native, provider: nil, framerate: options.framerate}
       {[], state}
     end
   end
@@ -40,7 +37,7 @@ defmodule Membrane.CameraCapture do
       height: height,
       pixel_format: pixel_format_to_atom(pixel_format),
       aligned: true,
-      framerate: {30, 1}
+      framerate: {state.framerate, 1}
     }
 
     my_pid = self()
