@@ -71,8 +71,6 @@ end
 
 ## Testing
 
-Running this manual test, you should be able to record a 5-sec long video stream from your webcam and then play it using ffplay (you need to have ffmpeg installed).
-
 To run manual tests, you need to install dependencies:
 
 ```shell
@@ -85,7 +83,7 @@ And run manual (you observe the result and decide whether it works) tests:
 $ mix test --include manual
 ```
 
-If run successfully, you should be able to see video recorded by your camera.
+If it runs successfully, you should be able to see video from your camera.
 
 _You might be asked to grant access to your camera, as some operating systems require that_
 
