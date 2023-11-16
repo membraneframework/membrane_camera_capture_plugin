@@ -13,7 +13,7 @@ It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 Add the following line to your `deps` in `mix.exs`. Run `mix deps.get`.
 
 ```elixir
-  {:membrane_camera_capture_plugin, "~> 0.6.1"}
+	{:membrane_camera_capture_plugin, "~> 0.7.0"}
 ```
 
 This package depends on the [ffmpeg](https://www.ffmpeg.org) libraries. The precompiled builds will be pulled and linked automatically. However, should there be any problems, consider installing it manually.
@@ -44,7 +44,7 @@ Dependencies:
 ```elixir
 def deps do
   [
-	{:membrane_camera_capture_plugin, "~> 0.5.0"}
+	{:membrane_camera_capture_plugin, "~> 0.7.0"}
     {:membrane_h264_ffmpeg_plugin, "~> 0.21"},
     {:membrane_file_plugin, "~> 0.10"},
     {:membrane_ffmpeg_swscale_plugin, "~> 0.10"}
