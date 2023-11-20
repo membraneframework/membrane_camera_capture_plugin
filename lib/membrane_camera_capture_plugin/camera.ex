@@ -47,7 +47,9 @@ defmodule Membrane.CameraCapture do
     {:ok, provider} =
       Membrane.UtilitySupervisor.start_link_child(
         ctx.utility_supervisor,
-        {Task, fn -> frame_provider(state.native, element_pid) end}
+        # The call to Supervisor.child_spec can be removed after
+        # https://github.com/membraneframework/membrane_core/pull/681 is merged and released.
+        Supervisor.child_spec({Task, fn -> frame_provider(state.native, element_pid) end}, [])
       )
 
     state = %{state | provider: provider}
