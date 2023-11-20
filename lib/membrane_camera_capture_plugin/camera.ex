@@ -23,8 +23,10 @@ defmodule Membrane.CameraCapture do
   @impl true
   def handle_init(_ctx, %__MODULE__{} = options) do
     with {:ok, native} <- Native.open(options.device, options.framerate) do
-      state = %{native: native, provider: nil, framerate: options.framerate}
+      state = %{native: native, provider: nil, init_time: nil, framerate: options.framerate}
       {[], state}
+    else
+      {:error, reason} -> raise "Failed to initialize camera, reason: #{reason}"
     end
   end
 
@@ -40,46 +42,35 @@ defmodule Membrane.CameraCapture do
       framerate: {state.framerate, 1}
     }
 
-    my_pid = self()
-    pid = spawn_link(fn -> frame_provider(state.native, my_pid) end)
+    element_pid = self()
 
-    Membrane.ResourceGuard.register(
-      ctx.resource_guard,
-      fn -> send(pid, :stop) end
-    )
+    {:ok, provider} =
+      Membrane.UtilitySupervisor.start_link_child(
+        ctx.utility_supervisor,
+        {Task, fn -> frame_provider(state.native, element_pid) end}
+      )
 
-    state = %{state | provider: pid}
+    state = %{state | provider: provider}
     actions = [stream_format: {:output, stream_format}]
     {actions, state}
   end
 
   defp frame_provider(native, target) do
-    receive do
-      :stop -> :ok
-    after
-      0 ->
-        with {:ok, frame} <- Native.read_packet(native) do
-          buffer = %Buffer{payload: frame}
-          send(target, {:frame_provider, buffer})
-          frame_provider(native, target)
-        else
-          {:error, reason} ->
-            raise "Error when reading packet from camera: #{inspect(reason)}"
-        end
+    with {:ok, frame} <- Native.read_packet(native) do
+      send(target, {:frame, frame})
+      frame_provider(native, target)
+    else
+      {:error, reason} ->
+        raise "Error when reading packet from camera: #{inspect(reason)}"
     end
   end
 
   @impl true
-  def handle_info({:frame_provider, buffer}, %{playback: :playing} = _ctx, state) do
-    {[buffer: {:output, buffer}], state}
-  end
-
-  # This callback is called only when
-  # element is not in state playing and frame provider is not
-  # terminated yet (and sending a frame to us, so we ignore it)
-  @impl true
-  def handle_info({:frame_provider, _buffer}, _ctx, state) do
-    {[], state}
+  def handle_info({:frame, frame}, _ctx, state) do
+    time = Membrane.Time.monotonic_time()
+    init_time = state.init_time || time
+    buffer = %Buffer{payload: frame, pts: time - init_time}
+    {[buffer: {:output, buffer}], %{state | init_time: init_time}}
   end
 
   defp pixel_format_to_atom("yuv420p"), do: :I420
