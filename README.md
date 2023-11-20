@@ -13,7 +13,7 @@ It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 Add the following line to your `deps` in `mix.exs`. Run `mix deps.get`.
 
 ```elixir
-  {:membrane_camera_capture_plugin, "~> 0.6.1"}
+	{:membrane_camera_capture_plugin, "~> 0.7.0"}
 ```
 
 This package depends on the [ffmpeg](https://www.ffmpeg.org) libraries. The precompiled builds will be pulled and linked automatically. However, should there be any problems, consider installing it manually.
@@ -44,7 +44,7 @@ Dependencies:
 ```elixir
 def deps do
   [
-	{:membrane_camera_capture_plugin, "~> 0.5.0"}
+	{:membrane_camera_capture_plugin, "~> 0.7.0"}
     {:membrane_h264_ffmpeg_plugin, "~> 0.21"},
     {:membrane_file_plugin, "~> 0.10"},
     {:membrane_ffmpeg_swscale_plugin, "~> 0.10"}
@@ -71,8 +71,6 @@ end
 
 ## Testing
 
-Running this manual test, you should be able to record a 5-sec long video stream from your webcam and then play it using ffplay (you need to have ffmpeg installed).
-
 To run manual tests, you need to install dependencies:
 
 ```shell
@@ -85,7 +83,7 @@ And run manual (you observe the result and decide whether it works) tests:
 $ mix test --include manual
 ```
 
-If run successfully, you should be able to see video recorded by your camera.
+If it runs successfully, you should be able to see video from your camera.
 
 _You might be asked to grant access to your camera, as some operating systems require that_
 
