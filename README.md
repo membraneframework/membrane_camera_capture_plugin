@@ -13,12 +13,12 @@ It is part of [Membrane Multimedia Framework](https://membraneframework.org).
 Add the following line to your `deps` in `mix.exs`. Run `mix deps.get`.
 
 ```elixir
-	{:membrane_camera_capture_plugin, "~> 0.7.0"}
+	{:membrane_camera_capture_plugin, "~> 0.7.1"}
 ```
 
 This package depends on the [ffmpeg](https://www.ffmpeg.org) libraries. The precompiled builds will be pulled and linked automatically. However, should there be any problems, consider installing it manually.
 
-### Manual instalation of dependencies
+### Manual installation of dependencies
 #### Ubuntu
 
 ```bash
@@ -39,34 +39,35 @@ brew install ffmpeg
 
 ## Sample Usage
 
-Dependencies:
+This example displays the stream from your camera on the screen:
 
 ```elixir
-def deps do
-  [
-	{:membrane_camera_capture_plugin, "~> 0.7.0"}
-    {:membrane_h264_ffmpeg_plugin, "~> 0.21"},
-    {:membrane_file_plugin, "~> 0.10"},
-    {:membrane_ffmpeg_swscale_plugin, "~> 0.10"}
-  ]
-end
-```
+Logger.configure(level: :info)
 
-```elixir
+Mix.install([
+  {:membrane_camera_capture_plugin, "~> 0.7.1"},
+  :membrane_h264_ffmpeg_plugin,
+  :membrane_ffmpeg_swscale_plugin,
+  :membrane_sdl_plugin
+])
+
 defmodule Example do
   use Membrane.Pipeline
 
   @impl true
   def handle_init(_ctx, _options) do
-    structure =
-      child(:source, Membrane.CameraCapture)
-      |> child(:converter, %Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420})
-      |> child(:encoder, Membrane.H264.FFmpeg.Encoder)
-      |> child(:sink, %Membrane.File.Sink{location: "output.h264"})
+    spec =
+      child(Membrane.CameraCapture)
+      |> child(%Membrane.FFmpeg.SWScale.PixelFormatConverter{format: :I420})
+      |> child(Membrane.SDL.Player)
 
-    {[spec: structure], %{}}
+    {[spec: spec], %{}}
   end
 end
+
+Membrane.Pipeline.start_link(Example)
+
+Process.sleep(:infinity)
 ```
 
 ## Testing
