@@ -14,8 +14,10 @@ defmodule Membrane.CameraCapture.BundlexProject do
         sources: ["camera_capture.c"],
         os_deps: [
           ffmpeg: [
-            {:precompiled, Membrane.PrecompiledDependencyProvider.get_dependency_url(:ffmpeg),
-             ["libavformat", "libavutil", "libavdevice"]},
+            {:precompiled,
+             Membrane.PrecompiledDependencyProvider.get_dependency_url(:ffmpeg,
+               version: "6.0.1"
+             ), ["libavformat", "libavutil", "libavdevice"]},
             {:pkg_config, ["libavformat", "libavutil", "libavdevice"]}
           ]
         ],
