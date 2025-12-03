@@ -1,7 +1,7 @@
 defmodule Membrane.CameraCapture.Mixfile do
   use Mix.Project
 
-  @version "0.7.3"
+  @version "0.7.4"
   @github_url "https://github.com/membraneframework/membrane_camera_capture_plugin"
 
   def project do
@@ -42,11 +42,11 @@ defmodule Membrane.CameraCapture.Mixfile do
       {:bundlex, "~> 1.2"},
       {:unifex, "~> 1.0"},
       {:membrane_precompiled_dependency_provider, "~> 0.2.1"},
-      {:membrane_raw_video_format, "~> 0.3.0"},
+      {:membrane_raw_video_format, "~> 0.4.3"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false},
-      {:membrane_ffmpeg_swscale_plugin, "~> 0.15.0", only: :test},
+      {:membrane_ffmpeg_swscale_plugin, "~> 0.16.0", only: :test},
       {:membrane_sdl_plugin, ">= 0.0.0", only: :test}
     ]
   end
