@@ -1,7 +1,7 @@
 defmodule Membrane.CameraCapture.Mixfile do
   use Mix.Project
 
-  @version "0.7.4"
+  @version "0.7.5"
   @github_url "https://github.com/membraneframework/membrane_camera_capture_plugin"
 
   def project do
