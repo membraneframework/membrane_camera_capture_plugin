@@ -19,11 +19,10 @@ defmodule Membrane.CameraCapture do
                 default: 30,
                 description: "Framerate of device's output video stream"
               ],
-               pixel_format: [
+              pixel_format: [
                 spec: String.t(),
                 default: "nv12",
                 description: "Pixel format of device output video stream"
-
               ],
               video_size: [
                 spec: String.t(),
@@ -33,15 +32,22 @@ defmodule Membrane.CameraCapture do
 
   @impl true
   def handle_init(_ctx, %__MODULE__{} = options) do
-    with {:ok, native} <- Native.open(options.device, options.framerate, options.pixel_format, options.video_size) do
+    with {:ok, native} <-
+           Native.open(
+             options.device,
+             options.framerate,
+             options.pixel_format,
+             options.video_size
+           ) do
       state = %{
-      native: native,
-      provider: nil,
-      init_time: nil,
-      framerate: options.framerate,
-      pixel_format: options.pixel_format |> pixel_format_to_atom(),
-      video_size: options.video_size |> frame_size_parse()
-    }
+        native: native,
+        provider: nil,
+        init_time: nil,
+        framerate: options.framerate,
+        pixel_format: options.pixel_format |> pixel_format_to_atom(),
+        video_size: options.video_size |> frame_size_parse()
+      }
+
       {[], state}
     else
       {:error, reason} -> raise "Failed to initialize camera, reason: #{reason}"
@@ -50,7 +56,7 @@ defmodule Membrane.CameraCapture do
 
   @impl true
   def handle_playing(ctx, state) do
-    { [width, height], pixel_format} = {state.video_size, state.pixel_format}
+    {[width, height], pixel_format} = {state.video_size, state.pixel_format}
     # {:ok, width, height, pixel_format} = Native.stream_props(state.native)
 
     stream_format = %Membrane.RawVideo{
@@ -105,7 +111,8 @@ defmodule Membrane.CameraCapture do
   defp pixel_format_to_atom(pixel_format), do: raise("unsupported pixel format #{pixel_format}")
 
   defp frame_size_parse(frame_size_str) do
-    String.split(frame_size_str, "x") |> Enum.map(fn x ->
+    String.split(frame_size_str, "x")
+    |> Enum.map(fn x ->
       String.to_integer(x)
     end)
   end
