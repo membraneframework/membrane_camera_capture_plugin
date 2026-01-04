@@ -44,7 +44,7 @@ defmodule Membrane.CameraCapture do
         provider: nil,
         init_time: nil,
         framerate: options.framerate,
-        pixel_format: options.pixel_format |> pixel_format_to_atom(),
+        pixel_format: options.pixel_format,
         video_size: options.video_size |> frame_size_parse()
       }
 
