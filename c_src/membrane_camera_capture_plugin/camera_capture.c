@@ -12,7 +12,7 @@ const char *driver = "avfoundation";
 const char *driver = "v4l2";
 #endif
 
-UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
+UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate, char *pixel_format, char *video_size) {
   avdevice_register_all();
   State *state = unifex_alloc_state(env);
   state->input_ctx = NULL;
@@ -27,7 +27,9 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate) {
   AVDictionary *options = NULL;
 
   av_dict_set(&options, "framerate", framerate, 0);
-  av_dict_set(&options, "pixel_format", "nv12", 0);
+  av_dict_set(&options, "pixel_format", pixel_format, 0);
+  av_dict_set(&options, "video_size", video_size, 0);
+
   if (avformat_open_input(&state->input_ctx, url, input_format, &options) < 0) {
     ret = do_open_result_error(env, "Could not open supplied url");
     goto end;
