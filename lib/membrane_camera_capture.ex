@@ -9,6 +9,17 @@ defmodule Membrane.CameraCapture do
 
   def_output_pad :output, accepted_format: _any, flow_control: :push
 
+  @pixel_formats %{
+    "yuv420p" => :I420,
+    "yuv422p" => :I422,
+    "yuv444p" => :I444,
+    "rgb24" => :RGB,
+    "rgba" => :RGBA,
+    "yuyv422" => :YUY2,
+    "nv12" => :NV12,
+    "nv21" => :NV21
+  }
+
   def_options device: [
                 spec: String.t(),
                 default: "default",
@@ -18,11 +29,37 @@ defmodule Membrane.CameraCapture do
                 spec: non_neg_integer(),
                 default: 30,
                 description: "Framerate of device's output video stream"
+              ],
+              pixel_format: [
+                spec: String.t(),
+                default: "nv12",
+                description: """
+                Pixel format requested from the device.
+                Must be one of: #{@pixel_formats |> Map.keys() |> Enum.join(", ")}.
+                """
+              ],
+              video_size: [
+                spec: {pos_integer(), pos_integer()} | nil,
+                default: nil,
+                description: """
+                Size of a video stream requested from the device, e.g. `{1920, 1080}`.
+                If set to `nil`, the device's default size is used.
+                """
               ]
 
   @impl true
   def handle_init(_ctx, %__MODULE__{} = options) do
-    with {:ok, native} <- Native.open(options.device, options.framerate) do
+    if not Map.has_key?(@pixel_formats, options.pixel_format) do
+      raise "Unsupported pixel format #{inspect(options.pixel_format)}"
+    end
+
+    with {:ok, native} <-
+           Native.open(
+             options.device,
+             options.framerate,
+             options.pixel_format,
+             options.video_size
+           ) do
       state = %{native: native, provider: nil, init_time: nil, framerate: options.framerate}
       {[], state}
     else
@@ -75,13 +112,8 @@ defmodule Membrane.CameraCapture do
     {[buffer: {:output, buffer}], %{state | init_time: init_time}}
   end
 
-  defp pixel_format_to_atom("yuv420p"), do: :I420
-  defp pixel_format_to_atom("yuv422p"), do: :I422
-  defp pixel_format_to_atom("yuv444p"), do: :I444
-  defp pixel_format_to_atom("rgb24"), do: :RGB
-  defp pixel_format_to_atom("rgba"), do: :RGBA
-  defp pixel_format_to_atom("yuyv422"), do: :YUY2
-  defp pixel_format_to_atom("nv12"), do: :NV12
-  defp pixel_format_to_atom("nv21"), do: :NV21
-  defp pixel_format_to_atom(pixel_format), do: raise("unsupported pixel format #{pixel_format}")
+  defp pixel_format_to_atom(pixel_format) do
+    Map.get(@pixel_formats, pixel_format) ||
+      raise "unsupported pixel format #{pixel_format}"
+  end
 end
