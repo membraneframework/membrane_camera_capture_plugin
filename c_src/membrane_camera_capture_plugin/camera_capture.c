@@ -28,8 +28,9 @@ UNIFEX_TERM do_open(UnifexEnv *env, char *url, char *framerate, char *pixel_form
 
   av_dict_set(&options, "framerate", framerate, 0);
   av_dict_set(&options, "pixel_format", pixel_format, 0);
-  av_dict_set(&options, "video_size", video_size, 0);
-
+  if (strlen(video_size) > 0) {
+    av_dict_set(&options, "video_size", video_size, 0);
+  }
   if (avformat_open_input(&state->input_ctx, url, input_format, &options) < 0) {
     ret = do_open_result_error(env, "Could not open supplied url");
     goto end;

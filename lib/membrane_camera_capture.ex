@@ -9,6 +9,17 @@ defmodule Membrane.CameraCapture do
 
   def_output_pad :output, accepted_format: _any, flow_control: :push
 
+  @pixel_formats %{
+    "yuv420p" => :I420,
+    "yuv422p" => :I422,
+    "yuv444p" => :I444,
+    "rgb24" => :RGB,
+    "rgba" => :RGBA,
+    "yuyv422" => :YUY2,
+    "nv12" => :NV12,
+    "nv21" => :NV21
+  }
+
   def_options device: [
                 spec: String.t(),
                 default: "default",
@@ -22,16 +33,26 @@ defmodule Membrane.CameraCapture do
               pixel_format: [
                 spec: String.t(),
                 default: "nv12",
-                description: "Pixel format of device output video stream"
+                description: """
+                Pixel format requested from the device.
+                Must be one of: #{@pixel_formats |> Map.keys() |> Enum.join(", ")}.
+                """
               ],
               video_size: [
-                spec: String.t(),
-                default: "1920x1080",
-                description: "video size of device output video stream"
+                spec: {pos_integer(), pos_integer()} | nil,
+                default: nil,
+                description: """
+                Size of a video stream requested from the device, e.g. `{1920, 1080}`.
+                If set to `nil`, the device's default size is used.
+                """
               ]
 
   @impl true
   def handle_init(_ctx, %__MODULE__{} = options) do
+    if not Map.has_key?(@pixel_formats, options.pixel_format) do
+      raise "Unsupported pixel format #{inspect(options.pixel_format)}"
+    end
+
     with {:ok, native} <-
            Native.open(
              options.device,
@@ -39,15 +60,7 @@ defmodule Membrane.CameraCapture do
              options.pixel_format,
              options.video_size
            ) do
-      state = %{
-        native: native,
-        provider: nil,
-        init_time: nil,
-        framerate: options.framerate,
-        pixel_format: options.pixel_format,
-        video_size: options.video_size |> frame_size_parse()
-      }
-
+      state = %{native: native, provider: nil, init_time: nil, framerate: options.framerate}
       {[], state}
     else
       {:error, reason} -> raise "Failed to initialize camera, reason: #{reason}"
@@ -56,8 +69,7 @@ defmodule Membrane.CameraCapture do
 
   @impl true
   def handle_playing(ctx, state) do
-    {[width, height], pixel_format} = {state.video_size, state.pixel_format}
-    # {:ok, width, height, pixel_format} = Native.stream_props(state.native)
+    {:ok, width, height, pixel_format} = Native.stream_props(state.native)
 
     stream_format = %Membrane.RawVideo{
       width: width,
@@ -100,20 +112,8 @@ defmodule Membrane.CameraCapture do
     {[buffer: {:output, buffer}], %{state | init_time: init_time}}
   end
 
-  defp pixel_format_to_atom("yuv420p"), do: :I420
-  defp pixel_format_to_atom("yuv422p"), do: :I422
-  defp pixel_format_to_atom("yuv444p"), do: :I444
-  defp pixel_format_to_atom("rgb24"), do: :RGB
-  defp pixel_format_to_atom("rgba"), do: :RGBA
-  defp pixel_format_to_atom("yuyv422"), do: :YUY2
-  defp pixel_format_to_atom("nv12"), do: :NV12
-  defp pixel_format_to_atom("nv21"), do: :NV21
-  defp pixel_format_to_atom(pixel_format), do: raise("unsupported pixel format #{pixel_format}")
-
-  defp frame_size_parse(frame_size_str) do
-    String.split(frame_size_str, "x")
-    |> Enum.map(fn x ->
-      String.to_integer(x)
-    end)
+  defp pixel_format_to_atom(pixel_format) do
+    Map.get(@pixel_formats, pixel_format) ||
+      raise "unsupported pixel format #{pixel_format}"
   end
 end
