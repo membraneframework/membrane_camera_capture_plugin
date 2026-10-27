@@ -60,8 +60,19 @@ UNIFEX_TERM read_packet(UnifexEnv *env, State *state) {
   AVPacket packet;
   UNIFEX_TERM ret;
   int res;
-  while ((res = av_read_frame(state->input_ctx, &packet)) == AVERROR(EAGAIN))
-    ;
+  while (1) {
+    res = av_read_frame(state->input_ctx, &packet);
+    if (res == AVERROR(EAGAIN)) {
+      continue;
+    }
+    if (res < 0 || packet.size > 0) {
+      break;
+    }
+    // FFmpeg's v4l2 device returns an empty packet for a buffer the driver flagged
+    // as corrupted or that has an unexpected size (common right after the stream
+    // starts). It holds no frame, so skip it.
+    av_packet_unref(&packet);
+  }
 
   if (res < 0) {
     ret = read_packet_result_error(env, av_err2str(res));
